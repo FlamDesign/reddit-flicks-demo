@@ -844,7 +844,7 @@ function render(){
   if(name==="search") document.getElementById("q").value=arg;
   document.body.classList.remove("drawer"); closeSheet();
   observeFlicks();
-  if(pendingAnchor){ const a=pendingAnchor; pendingAnchor=null; requestAnimationFrame(()=>scrollToAnchor(a)); }
+  if(pendingAnchor){ let a=pendingAnchor; pendingAnchor=null; const run=()=>{ if(!a) return; const x=a; a=null; scrollToAnchor(x); }; requestAnimationFrame(run); setTimeout(run, 80); }
   else window.scrollTo(0,0);
 }
 window.addEventListener("hashchange", render);
