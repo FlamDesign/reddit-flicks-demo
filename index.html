@@ -89,6 +89,9 @@ svg{display:block}
 .bav{border-radius:50%;display:grid;place-items:center;flex:none;color:#fff;font-weight:700}
 .bav.gap{background:#002f6c;font-family:Georgia,"Times New Roman",serif;letter-spacing:.5px}
 .bav.levis{background:#c41230;font-family:Georgia,serif}
+.bav.patagonia{background:#1f3a5f}
+.bav.nike{background:#111;border:1px solid #444}
+.avstack{display:flex}.avstack .bav{margin-right:-6px;box-shadow:0 0 0 2px var(--bg)}
 .meta .bav{width:24px;height:24px;font-size:8px}
 .adtag{color:var(--t3)}
 .chip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:#1c2427;color:var(--t2);font-size:12px;font-weight:600}
@@ -375,7 +378,7 @@ svg{display:block}
       <a class="ni" href="#/"><span class="gico" style="background:#ffb86b">d</span>r/denim</a>
       <a class="ni" href="#/"><span class="gico" style="background:#c9b6ff">p</span>r/photography</a>
     </div>
-    <div class="nfoot">Concept prototype by Flam showing how Flicks could run in every Reddit ad format. Not affiliated with or endorsed by Reddit, Bentley, Gap or Levi's.</div>
+    <div class="nfoot">Concept prototype by Flam showing how Flicks could run in every Reddit ad format. Not affiliated with or endorsed by Reddit, Bentley, Gap, Levi's, Patagonia or Nike.</div>
   </nav>
   <div class="main">
     <main class="feed" id="feed" aria-live="polite"></main>
@@ -430,6 +433,20 @@ const BRANDS = {
     src:"https://native-ads-dev.appless.workers.dev/6a96c6969e74536944c4167f_z64116/ad.js",
     adConfig:false, stage:"levis",
     variants:[{n:"Baggy Overalls", url:"https://www.levi.com/US/en_US/clothing/women/overalls-jumpsuits/baggy-overalls/p/000UG0004"}]
+  },
+  patagonia: {
+    name:"Patagonia", handle:"u/patagonia", domain:"patagonia.com", hosts:["patagonia.com"], av:"P", cta:"Shop now",
+    src:"https://native-ads-dev.appless.workers.dev/6a91088b3252dba34b486df1_q18dy8/ad.js",
+    adConfig:false, stage:"",
+    variants:[{n:"Green jacket", url:"https://www.patagonia.com/home/"},{n:"Brown jacket", url:"https://www.patagonia.com/home/"},{n:"Teal jacket", url:"https://www.patagonia.com/home/"}]
+  },
+  nike: {
+    name:"Nike", handle:"u/Nike", domain:"nike.in", hosts:["nike.in","nike.com"], av:"N", cta:"Shop Now",
+    src:"https://native-ads-dev.appless.workers.dev/6a97885c9e74536944d35d53_dsefds/ad.js",
+    adConfig:false, stage:"",
+    variants:[{n:"Universa leggings", url:"https://www.nike.in/nike-universa-women-s-high-waisted-full-length-leggings-with-no-front-seam/p/24810371"},
+              {n:"Universa sports bra", url:"https://www.nike.in/nike-universa-women-s-medium-support-padded-sports-bra/p/26040433"},
+              {n:"Third look", url:"https://www.nike.in/nike-universa-women-s-high-waisted-full-length-leggings-with-no-front-seam/p/24810371"}]
   }
 };
 
@@ -598,21 +615,18 @@ function freeForm(id){
     ${actions(id, 128, 34)}
   </article>`;
 }
-// 3. Carousel ad: Flick as the lead card, product cards after it
+// 3. Carousel ad: every card is a Flick
+const CAROUSEL = ["gap","patagonia","nike"];
 function carousel(id){
-  const v=BRANDS.gap.variants;
-  const cards=v.map((x,i)=>`<div class="ccard"><div class="im" style="background:linear-gradient(160deg,${x.c1},${x.c2})">${I.shirt}</div>
-      <div class="cap"><span>${x.n}<small>gap.com</small></span><button class="cta" onclick="openSheet('gap',BRANDS.gap.variants[${i}].url)">Shop</button></div></div>`).join("");
+  const cards=CAROUSEL.map(br=>{const cid=`${id}-${br}`, b=BRANDS[br];
+    return `<div class="ccard">${flick(cid,br,"sq")}<div class="cap"><span>${b.name}<small data-vname="${cid}">${b.variants[0].n}</small></span><button class="cta" onclick="shop('${cid}')">Shop</button></div></div>`;}).join("");
   return `<article class="post ad" data-anchor="car" aria-label="Advertisement">
-    ${adMeta("gap")}
-    <a class="title" href="#" onclick="shop('${id}');return false">Three ways to wear fall. Swipe, or tap a color in the first card.</a>
+    <div class="meta"><span class="avstack">${CAROUSEL.map(br=>bav(br)).join("")}</span><b style="margin-left:6px">Fall layers</b><span>·</span><span class="adtag">Ad</span><span class="grow"></span><button class="more" aria-label="More options">${I.dots}</button></div>
+    <a class="title" href="#" onclick="return false">Three brands, nine looks. Swipe, then tap a color or outfit on any card.</a>
     <div class="car">
-      <button class="arrow l hide-m" aria-label="Previous" onclick="this.parentNode.querySelector('.track').scrollBy({left:-320,behavior:'smooth'})">‹</button>
-      <div class="track">
-        <div class="ccard">${flick(id,"gap","sq")}<div class="cap"><span>Tap to switch<small data-vname="${id}">Denim shirt</small></span><button class="cta" onclick="shop('${id}')">Shop</button></div></div>
-        ${cards}
-      </div>
-      <button class="arrow r hide-m" aria-label="Next" onclick="this.parentNode.querySelector('.track').scrollBy({left:320,behavior:'smooth'})">›</button>
+      <button class="arrow l hide-m" aria-label="Previous" onclick="this.parentNode.querySelector('.track').scrollBy({left:-330,behavior:'smooth'})">‹</button>
+      <div class="track">${cards}</div>
+      <button class="arrow r hide-m" aria-label="Next" onclick="this.parentNode.querySelector('.track').scrollBy({left:330,behavior:'smooth'})">›</button>
     </div>
     ${actions(id, 77, 12)}
   </article>`;
@@ -657,10 +671,10 @@ function amaAd(id){
 // 7. Reminder ad
 function reminderAd(id){
   return `<article class="post ad" data-anchor="rem" aria-label="Advertisement">
-    ${adMeta("levis")}
-    <a class="title" href="#" onclick="shop('${id}');return false">New styles drop soon. Preview three looks now, get a reminder at launch.</a>
-    <div class="admedia">${stage(id,"levis")}
-      <div class="adbar"><span class="dom">levi.com</span>
+    ${adMeta("nike")}
+    <a class="title" href="#" onclick="shop('${id}');return false">New training styles drop soon. Preview three looks now, get a reminder at launch.</a>
+    <div class="admedia">${stage(id,"nike")}
+      <div class="adbar"><span class="dom">nike.in</span>
         <button class="cta" onclick="remind(this,'the drop')">${I.bell}Remind me</button>
         <button class="cta solid" onclick="shop('${id}')">Shop now</button></div>
     </div>
@@ -675,22 +689,17 @@ function shopCard(id, brand){
     <b data-vname="${id}">${b.variants[0].n}</b>
     <div class="row"><span>${b.domain}</span><button class="cta" onclick="shop('${id}')">Shop</button></div></div></div>`;
 }
-function shopBlock(anchor, title, sub, ids){
+function shopBlock(anchor, title, sub, brands){
   return `<section class="shopblk" data-anchor="${anchor}" aria-label="${esc(title)}">
     <h5>${title}</h5><div class="sub">${sub}</div>
-    <div class="shoprow">${shopCard(ids[0],"gap")}${shopCard(ids[1],"levis")}</div></section>`;
+    <div class="shoprow">${brands.map(br=>shopCard(`${anchor}-${br}`,br)).join("")}</div></section>`;
 }
-// 9. Trending module with a Trending Takeover tile
-function trending(id, brand="bentley"){
-  const t=[["First frost","Cozy layering threads are up 3x","linear-gradient(160deg,#9cc3e6,#3f6c99)"],
-           ["Daylight saving","The great clock debate returns","linear-gradient(160deg,#f6c177,#c2683a)"],
-           ["Soup season","Your best one-pot recipes","linear-gradient(160deg,#9bd28e,#3f7d4b)"]];
-  const tile=(x)=>`<div class="ttile" style="background:${x[2]}"><div class="ov b"><b>${x[0]}</b><small>${x[1]}</small></div></div>`;
+// 9. Trending module: the takeover tile plus every other tile as a Flick
+const TREND = [["bentley","Promoted · Takeover"],["patagonia","Promoted · First frost"],["nike","Promoted · Marathon season"],["gap","Promoted · Layering season"],["levis","Promoted · Denim week"]];
+function trending(id){
   return `<section data-anchor="trend" aria-label="Trending today">
     <div class="trendh"><h3>Trending today</h3><span>Popular · Search</span></div>
-    <div class="trend">${tile(t[0])}
-      <div class="ttile tt-${brand}">${flick(id,brand)}<div class="ov t"><b>${BRANDS[brand].name}</b><small>Promoted · tap a color</small></div></div>
-      ${tile(t[1])}${tile(t[2])}</div></section>`;
+    <div class="trend">${TREND.map(([br,sub])=>`<div class="ttile tt-${br}">${flick(`${id}-${br}`,br)}<div class="ov t"><b>${BRANDS[br].name}</b><small>${sub}</small></div></div>`).join("")}</div></section>`;
 }
 // 10. Takeover banners (desktop right rail)
 const BANNER_COPY = {
@@ -744,6 +753,15 @@ function cmt(c, i){
     ${(replies||[]).map((r,j)=>`<div class="reply">${cmt(r,i+j+1)}</div>`).join("")}</div></div>`;
 }
 
+const CONV = {
+  p1:["gap","Layering season: one denim shirt, three looks. Tap to switch."],
+  p2:["patagonia","Built for the coast. Tap a color to see each jacket outdoors."],
+  p3:["levis","Denim that lasts. Tap through three ways to wear it."],
+  p4:["gap","Weeknight comfort, three ways. Tap a color to switch."],
+  p5:["gap","Add one layer to your capsule. Tap a color to switch."],
+  p6:["nike","Train in what moves with you. Tap an outfit to switch."]
+};
+
 /* ================= rail pieces ================= */
 const RECENT = `<div class="rcard"><h3>Recent posts <button>Clear</button></h3>
   <a class="rp" href="#/post/p5"><div class="m"><span class="sav" style="background:#7ad3ff">c</span>r/capsulewardrobe · 1d ago</div><b>My 24-piece fall capsule, finally done</b><small>930 upvotes · 121 comments</small></a>
@@ -752,7 +770,7 @@ const POPCOMM = `<div class="rcard"><h3>Popular communities</h3>
   <a class="comm" href="#/r/capsulewardrobe"><span class="sav" style="background:#7ad3ff">c</span><span><b>r/capsulewardrobe</b><small>412K members</small></span></a>
   <a class="comm" href="#/"><span class="sav" style="background:#ffb86b">d</span><span><b>r/denim</b><small>188K members</small></span></a>
   <a class="comm" href="#/"><span class="sav" style="background:#c9b6ff">p</span><span><b>r/photography</b><small>5.4M members</small></span></a></div>`;
-const RFOOT = `<div class="rfoot">Concept prototype by Flam. Not affiliated with or endorsed by Reddit, Bentley, Gap or Levi's.</div>`;
+const RFOOT = `<div class="rfoot">Concept prototype by Flam. Not affiliated with or endorsed by Reddit, Bentley, Gap, Levi's, Patagonia or Nike.</div>`;
 const ABOUT = `<div class="rcard"><h3>r/capsulewardrobe</h3><p>Build a small wardrobe you love. Outfit grids, capsule plans and buy-it-once advice.</p><p style="color:var(--t3)">412K members · 1.2K online</p></div>`;
 
 /* ================= views ================= */
@@ -767,7 +785,7 @@ const VIEWS = {
   },
   popular(){
     return {
-      feed: trending("pop-trend","bentley") + SEP + adPost("pop-fv","levis","Quality never goes out of style. Tap through three looks.","fv") + SEP + ["p2","p6","p4","p1"].map(textPost).join(SEP),
+      feed: trending("pop-trend") + SEP + adPost("pop-fv","levis","Quality never goes out of style. Tap through three looks.","fv") + SEP + ["p2","p6","p4","p1"].map(textPost).join(SEP),
       rail: RECENT + POPCOMM + RFOOT
     };
   },
@@ -782,7 +800,7 @@ const VIEWS = {
   post(id){
     const o=POSTS[id]||POSTS.p1; id=POSTS[id]?id:"p1";
     const cm=o.cmts||DEFAULT_CMTS;
-    const list=o.shop ? shopBlock("list","Shop this conversation","Ad · Products from brands on Reddit that match this thread",["post-list-gap","post-list-levis"]) : "";
+    const list=o.shop ? shopBlock("list","Shop this conversation","Ad · Products from brands on Reddit that match this thread",["gap","patagonia","levis","nike"]) : "";
     const thread = cm.map((c,i)=>cmt(c,i) + (i===1?list:"")).join("");
     return {
       feed:`<article class="post">
@@ -792,7 +810,7 @@ const VIEWS = {
         ${o.img?`<div class="imgmedia" style="background:${o.img}"></div>`:""}
         ${actions(id,o.v,o.cm)}
       </article>
-      ${adPost("post-conv","gap","Layering season: one denim shirt, three looks. Tap to switch.","conv")}
+      ${(()=>{const c=CONV[id]||CONV.p1; return adPost("post-conv",c[0],c[1],"conv");})()}
       <div class="post"><div class="cbox">Join the conversation</div><div class="sortb">Sort by: <b style="color:var(--t1)">Best</b></div>${thread}</div>`,
       rail: ABOUT + topBanner("post-top","post-top") + RFOOT
     };
@@ -802,7 +820,7 @@ const VIEWS = {
     return {
       feed:`<div class="stabs"><span class="on">Posts</span><span>Communities</span><span>Comments</span><span>Media</span><span>People</span></div>
         <div style="margin:4px 16px 4px;color:var(--t3);font-size:13px">Results for “${esc(q)}”</div>${rows}
-        ${shopBlock("srch","Products Redditors mention","Shopping results · Sponsored products from brands on Reddit",["srch-gap","srch-levis"])}`,
+        ${shopBlock("srch","Products Redditors mention","Shopping results · Sponsored products from brands on Reddit",["patagonia","gap","nike","levis"])}`,
       rail: POPCOMM + RFOOT
     };
   }
@@ -853,7 +871,7 @@ const GUIDE = [
     ["Reddit Takeover","#/","tk-feed"],
     ["Takeover top banner","#/","tk-top",1],
     ["Takeover sticky banner","#/","tk-sticky",1],
-    ["Takeover trending tile","#/popular","trend"],
+    ["Trending tiles","#/popular","trend"],
     ["First View","#/popular","fv"],
     ["Category Takeover","#/r/capsulewardrobe","cat"]]],
   ["In-feed", [
