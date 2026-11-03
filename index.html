@@ -641,17 +641,6 @@ function carousel(id){
     ${actions(id, 77, 12)}
   </article>`;
 }
-// 4. Product ad (Dynamic Product Ads): single catalog product
-function productAd(id){
-  return `<article class="post ad" data-anchor="prod" aria-label="Advertisement">
-    ${adMeta("levis")}
-    <a class="title" href="#" onclick="shop('${id}');return false">Picked for you from Levi's</a>
-    <div class="admedia">${stage(id,"levis")}
-      <div class="adbar"><span class="dom"><b>Baggy Overalls</b>levi.com · Price from catalog</span><button class="cta solid" onclick="shop('${id}')">Shop</button></div>
-    </div>
-    ${actions(id, 31, 4)}
-  </article>`;
-}
 // 5. Collection ad: Flick hero plus shoppable tiles that follow the active color
 function collection(id){
   const tiles=BRANDS.gap.variants.map((x,i)=>`<button class="tile-p${i===0?" on":""}" data-sync="${id}" data-i="${i}" onclick="openSheet('gap',BRANDS.gap.variants[${i}].url)">
@@ -676,19 +665,6 @@ function amaAd(id){
         <button class="cta solid" onclick="toast('Opens the AMA thread in the live product')">Ask a question</button></div>
     </div>
     ${actions(id, 211, 58)}
-  </article>`;
-}
-// 7. Reminder ad
-function reminderAd(id){
-  return `<article class="post ad" data-anchor="rem" aria-label="Advertisement">
-    ${adMeta("nike")}
-    <a class="title" href="#" onclick="shop('${id}');return false">New training styles drop soon. Preview three looks now, get a reminder at launch.</a>
-    <div class="admedia">${stage(id,"nike")}
-      <div class="adbar"><span class="dom">nike.in</span>
-        <button class="cta" onclick="remind(this,'the drop')">${I.bell}Remind me</button>
-        <button class="cta solid" onclick="shop('${id}')">Shop now</button></div>
-    </div>
-    ${actions(id, 53, 7)}
   </article>`;
 }
 // 8. Shopping card row: Shopping listing ad (in comments) and search shopping carousel
@@ -788,14 +764,14 @@ const VIEWS = {
   home(){
     return {
       feed:[adPost("home-tk","bentley","Beyond the ordinary. Tap a color to see it your way.","tk-feed"), textPost("p1"),
-            freeForm("home-ff"), textPost("p2"), carousel("home-car"), textPost("p3"), productAd("home-prod"), textPost("p4"),
-            collection("home-col"), textPost("p5"), amaAd("home-ama"), textPost("p6"), reminderAd("home-rem")].join(SEP),
+            freeForm("home-ff"), textPost("p2"), carousel("home-car"), textPost("p3"),
+            collection("home-col"), textPost("p4"), amaAd("home-ama"), textPost("p5"), textPost("p6")].join(SEP),
       rail: topBanner("rail-top","tk-top","bentley") + RECENT + POPCOMM + stickyBanner("rail-sticky","tk-sticky","bentley") + RFOOT
     };
   },
   popular(){
     return {
-      feed: trending("pop-trend") + SEP + adPost("pop-fv","levis","Quality never goes out of style. Tap through three looks.","fv") + SEP + ["p2","p6","p4","p1"].map(textPost).join(SEP),
+      feed: trending("pop-trend") + SEP + ["p2","p6","p4","p1"].map(textPost).join(SEP),
       rail: RECENT + POPCOMM + RFOOT
     };
   },
@@ -803,8 +779,8 @@ const VIEWS = {
     const head=`<div class="cbanner"></div><div class="chead"><span class="icon">c</span><h1>r/capsulewardrobe</h1>
       <div class="btns"><button class="cta">+ Create post</button><button class="join" onclick="join(this)">Join</button></div></div>`;
     return {
-      feed: head + adPost("comm-cat","gap","Built for small wardrobes: one shirt, three colors. Tap to switch.","cat") + SEP + ["p1","p5"].map(textPost).join(SEP),
-      rail: ABOUT + topBanner("comm-top","cat-top") + stickyBanner("comm-sticky","cat-sticky") + RFOOT
+      feed: head + ["p1","p5"].map(textPost).join(SEP),
+      rail: ABOUT + POPCOMM + RFOOT
     };
   },
   post(id){
@@ -829,8 +805,7 @@ const VIEWS = {
     const rows=["p1","p3","p5"].map(id=>{const o=POSTS[id];return `<a class="sres" href="#/post/${id}"><div class="tx"><small>r/${o.sub} · ${o.age}</small><b>${o.t}</b><small>${fmt(o.v)} votes · ${fmt(o.cm)} comments</small></div><div class="th" style="background:linear-gradient(160deg,#8fb0d4,#4f6f96)"></div></a>`;}).join("");
     return {
       feed:`<div class="stabs"><span class="on">Posts</span><span>Communities</span><span>Comments</span><span>Media</span><span>People</span></div>
-        <div style="margin:4px 16px 4px;color:var(--t3);font-size:13px">Results for “${esc(q)}”</div>${rows}
-        ${shopBlock("srch","Products Redditors mention","Shopping results · Sponsored products from brands on Reddit",["patagonia","gap","nike","levis"])}`,
+        <div style="margin:4px 16px 4px;color:var(--t3);font-size:13px">Results for “${esc(q)}”</div>${rows}`,
       rail: POPCOMM + RFOOT
     };
   }
@@ -877,24 +852,19 @@ function closeSheet(){ document.getElementById("scrim").classList.remove("on"); 
 
 /* ================= demo guide ================= */
 const GUIDE = [
-  ["Takeovers", [
+  ["Takeover", [
     ["Reddit Takeover","#/","tk-feed"],
     ["Takeover top banner","#/","tk-top",1],
     ["Takeover sticky banner","#/","tk-sticky",1],
-    ["Trending tiles","#/popular","trend"],
-    ["First View","#/popular","fv"],
-    ["Category Takeover","#/r/capsulewardrobe","cat"]]],
+    ["Trending tiles","#/popular","trend"]]],
   ["In-feed", [
     ["Free-form ad","#/","ff"],
     ["Carousel ad","#/","car"],
-    ["Product ad","#/","prod"],
     ["Collection ad","#/","col"],
-    ["AMA ad","#/","ama"],
-    ["Reminder ad","#/","rem"]]],
-  ["Conversation and search", [
+    ["AMA ad","#/","ama"]]],
+  ["Conversation", [
     ["Conversation ad","#/post/p1","conv"],
-    ["Shopping listing ad","#/post/p1","list"],
-    ["Search shopping ad","#/search?q=denim%20overshirt","srch"]]]
+    ["Shopping listing ad","#/post/p1","list"]]]
 ];
 function buildGuide(){
   const wide = innerWidth>=1200; let n=0;
