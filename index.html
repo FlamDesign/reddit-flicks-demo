@@ -95,6 +95,14 @@ svg{display:block}
 .chip.ama{background:#ff4500;color:#fff}
 .admedia{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#151a1c}
 .stage{position:relative;width:100%;aspect-ratio:1/1;max-height:560px;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 40%,#e9e8e4 0%,#d9d8d3 55%,#c6c5c0 100%)}
+.stage.bentley{background:radial-gradient(120% 90% at 50% 45%,#3a3f44 0%,#16181a 60%,#08090a 100%)}
+.flick.fl-bentley,.flick.fl-bentley .fstate{background:transparent}
+.flick.fl-bentley .fstate.load::after{border-color:#3a3f44;border-top-color:#d9d4c7}
+.bn-bentley .flick{background:radial-gradient(120% 90% at 50% 45%,#3a3f44 0%,#121416 70%)}
+.bn-bentley .bpanel,.b250.bn-bentley{background:#0b0c0d}
+.bn-bentley .bpanel .cta{color:#0b0c0d}
+.tt-bentley{background:radial-gradient(120% 90% at 50% 45%,#3a3f44 0%,#101214 75%)}
+.bav.bentley{background:#0b0c0d;font-family:Georgia,"Times New Roman",serif;border:1px solid #d9d4c7;color:#d9d4c7}
 .stage.levis{background:radial-gradient(120% 90% at 50% 40%,#e7e5e1 0%,#d2cfca 60%,#bdbab4 100%)}
 .flick{position:relative;overflow:hidden;background:#eef0f2}
 .stage .flick{height:100%;aspect-ratio:1/1;max-width:100%}
@@ -402,8 +410,14 @@ svg{display:block}
 <script>
 /* ================= brands and Flick tags ================= */
 const BRANDS = {
+  bentley: {
+    name:"Bentley", handle:"u/Bentley", domain:"bentleymotors.com", hosts:null, av:"B", cta:"Get in touch",
+    src:"https://native-ads.appless.workers.dev/6a9bc07393e71f3ec9b12c81_xogy7s/ad.js",
+    adConfig:false, fontScan:true, transparent:true, stage:"bentley",
+    variants:[{n:"Bentley", url:"https://www.bentleymotors.com/"}]
+  },
   gap: {
-    name:"Gap", handle:"u/Gap", domain:"gap.com", hosts:["gap.com"], av:"GAP",
+    name:"Gap", handle:"u/Gap", domain:"gap.com", hosts:["gap.com"], av:"GAP", cta:"Shop Now",
     src:"https://native-ads-dev.appless.workers.dev/mti1bs/ad.js",
     adConfig:true, stage:"",
     variants:[
@@ -413,7 +427,7 @@ const BRANDS = {
     ]
   },
   levis: {
-    name:"Levi's", handle:"u/Levis", domain:"levi.com", hosts:["levi.com"], av:"LS&amp;Co",
+    name:"Levi's", handle:"u/Levis", domain:"levi.com", hosts:["levi.com"], av:"LS&amp;Co", cta:"Shop now",
     src:"https://native-ads-dev.appless.workers.dev/6a96c6969e74536944c4167f_z64116/ad.js",
     adConfig:false, stage:"levis",
     variants:[{n:"Baggy Overalls", url:"https://www.levi.com/US/en_US/clothing/women/overalls-jumpsuits/baggy-overalls/p/000UG0004"}]
@@ -435,13 +449,16 @@ v.addEventListener("vertex-diff-change",function(e){var d=e.detail||{};t({type:"
 new MutationObserver(function(){var v=document.querySelector("vertex-player");if(v)hook(v)}).observe(document.documentElement,{childList:true,subtree:true});
 window.addEventListener("error",function(e){var s=e.target;if(s&&s.tagName==="SCRIPT")t({type:"error",msg:"Could not load "+s.src})},true);})();`;
   const cfg = b.adConfig ? `<script>window.AD_CONFIG=window.AD_CONFIG||{};window.AD_CONFIG.dsp="dv360_studio";window.AD_CONFIG.publisherInfo={"publisher_id":"\${PUBLISHER_ID}","adsxt_publisher_id":"\${ADSXT_PUBLISHER_ID}","universal_site_id":"\${UNIVERSAL_SITE_ID}","source_url":"\${SOURCE_URL}","source_url_enc":"\${SOURCE_URL_ENC}","adsxt_ad_system_domain":"\${ADSXT_AD_SYSTEM_DOMAIN}"};window.AD_CONFIG.clickTracker={"mode":"exit","template":""};<\/script>` : "";
+  const fonts = b.fontScan ? `<script>(function(){var seen={},head=document.head||document.documentElement,until=Date.now()+3e4;function add(css){if(seen[css])return;seen[css]=1;var s=document.createElement("style");s.setAttribute("data-vertex-fonts","");s.textContent=css;head.appendChild(s)}function scan(){try{var ps=document.getElementsByTagName("vertex-player");for(var i=0;i<ps.length;i++){var r=ps[i].shadowRoot;if(!r)continue;var n=r.querySelectorAll("style,link[rel=stylesheet]");for(var j=0;j<n.length;j++){var el=n[j];if(el.tagName==="LINK"){if(/fonts\\.googleapis\\.com/.test(el.href)&&!seen[el.href]){seen[el.href]=1;var l=document.createElement("link");l.rel="stylesheet";l.href=el.href;head.appendChild(l)}continue}var m=(el.textContent||"").match(/@font-face\\s*\\{[^}]*\\}/g);if(m)add(m.join(""))}}}catch(e){}if(Date.now()<until)setTimeout(scan,250)}scan()})();<\/script>` : "";
+  const bg = b.transparent ? "transparent" : "#eef0f2";
   return `<!doctype html>
 <meta charset=utf-8>
 <meta name=ad.orientation content=portrait,landscape>
-<style>html,body{margin:0;height:100%;background:#eef0f2;overflow:hidden}</style>
+<style>html,body{margin:0;height:100%;background:${bg};overflow:hidden}</style>
 <script>${bridge}<\/script>
 <script>var ExitApi=window.ExitApi||{exit:function(){}},clickTag="\${CLICK_URL_UNESC}";<\/script>
 ${cfg}
+${fonts}
 <script src=${b.src}><\/script>`;
 }
 
@@ -463,7 +480,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&
 let SLOTS = {};
 function flick(id, brand, cls=""){
   SLOTS[id] = { brand, ready:false, error:false, lastCta:0, variant:0, timer:null, mounted:false };
-  return `<div class="flick ${cls}" data-slot="${id}"><div class="fstate load"></div></div>`;
+  return `<div class="flick fl-${brand} ${cls}" data-slot="${id}"><div class="fstate load"></div></div>`;
 }
 function stage(id, brand){ return `<div class="stage ${BRANDS[brand].stage}">${flick(id, brand)}</div>`; }
 function variantOf(id){ const s=SLOTS[id], b=BRANDS[s.brand]; return b.variants[s.variant] || b.variants[0]; }
@@ -563,7 +580,7 @@ function adPost(id, brand, headline, anchor){
     ${adMeta(brand)}
     <a class="title" href="#" onclick="shop('${id}');return false">${headline}</a>
     <div class="admedia">${stage(id, brand)}
-      <div class="adbar"><a class="dom" href="#" onclick="shop('${id}');return false">${b.domain}</a><button class="cta" onclick="shop('${id}')">Shop Now</button></div>
+      <div class="adbar"><a class="dom" href="#" onclick="shop('${id}');return false">${b.domain}</a><button class="cta" onclick="shop('${id}')">${b.cta}</button></div>
     </div>
     ${actions(id, 42, 6)}
   </article>`;
@@ -665,7 +682,7 @@ function shopBlock(anchor, title, sub, ids){
     <div class="shoprow">${shopCard(ids[0],"gap")}${shopCard(ids[1],"levis")}</div></section>`;
 }
 // 9. Trending module with a Trending Takeover tile
-function trending(id){
+function trending(id, brand="bentley"){
   const t=[["First frost","Cozy layering threads are up 3x","linear-gradient(160deg,#9cc3e6,#3f6c99)"],
            ["Daylight saving","The great clock debate returns","linear-gradient(160deg,#f6c177,#c2683a)"],
            ["Soup season","Your best one-pot recipes","linear-gradient(160deg,#9bd28e,#3f7d4b)"]];
@@ -673,17 +690,23 @@ function trending(id){
   return `<section data-anchor="trend" aria-label="Trending today">
     <div class="trendh"><h3>Trending today</h3><span>Popular · Search</span></div>
     <div class="trend">${tile(t[0])}
-      <div class="ttile">${flick(id,"gap")}<div class="ov t"><b>Gap fall layers</b><small>Promoted · tap a color</small></div></div>
+      <div class="ttile tt-${brand}">${flick(id,brand)}<div class="ov t"><b>${BRANDS[brand].name}</b><small>Promoted · tap a color</small></div></div>
       ${tile(t[1])}${tile(t[2])}</div></section>`;
 }
 // 10. Takeover banners (desktop right rail)
-function topBanner(id, anchor){
+const BANNER_COPY = {
+  bentley:{h:"Make it<br>yours.", p:"Tap a color on the car above."},
+  gap:{h:"One shirt.<br>Three ways.", p:"Tap a color in the video above."}
+};
+function topBanner(id, anchor, brand="gap"){
+  const b=BRANDS[brand], c=BANNER_COPY[brand];
   return `<div data-anchor="${anchor}"><div class="adlabel">Advertisement</div>
-    <div class="banner b600">${flick(id,"gap")}<div class="bpanel">${bav("gap")}<h4>One shirt.<br>Three ways.</h4><p>Showing: <span data-vname="${id}">Denim shirt</span></p><button class="cta" onclick="shop('${id}')">Shop Now</button></div></div></div>`;
+    <div class="banner b600 bn-${brand}">${flick(id,brand)}<div class="bpanel">${bav(brand)}<h4>${c.h}</h4><p>${c.p}</p><button class="cta" onclick="shop('${id}')">${b.cta}</button></div></div></div>`;
 }
-function stickyBanner(id, anchor){
+function stickyBanner(id, anchor, brand="gap"){
+  const b=BRANDS[brand];
   return `<div class="stick" data-anchor="${anchor}"><div class="adlabel">Advertisement</div>
-    <div class="banner b250">${flick(id,"gap")}<div class="side">${bav("gap")}<button onclick="shop('${id}')">SHOP NOW</button></div></div></div>`;
+    <div class="banner b250 bn-${brand}">${flick(id,brand)}<div class="side">${bav(brand)}<button onclick="shop('${id}')">${b.cta.toUpperCase()}</button></div></div></div>`;
 }
 
 /* ================= organic content ================= */
@@ -737,15 +760,15 @@ const ABOUT = `<div class="rcard"><h3>r/capsulewardrobe</h3><p>Build a small war
 const VIEWS = {
   home(){
     return {
-      feed:[adPost("home-tk","gap","One denim shirt, styled your way. Tap a color to switch the look.","tk-feed"), textPost("p1"),
+      feed:[adPost("home-tk","bentley","Beyond the ordinary. Tap a color to see it your way.","tk-feed"), textPost("p1"),
             freeForm("home-ff"), textPost("p2"), carousel("home-car"), textPost("p3"), productAd("home-prod"), textPost("p4"),
             collection("home-col"), textPost("p5"), amaAd("home-ama"), textPost("p6"), reminderAd("home-rem")].join(SEP),
-      rail: topBanner("rail-top","tk-top") + RECENT + POPCOMM + stickyBanner("rail-sticky","tk-sticky") + RFOOT
+      rail: topBanner("rail-top","tk-top","bentley") + RECENT + POPCOMM + stickyBanner("rail-sticky","tk-sticky","bentley") + RFOOT
     };
   },
   popular(){
     return {
-      feed: trending("pop-trend") + SEP + adPost("pop-fv","levis","Quality never goes out of style. Tap through three looks.","fv") + SEP + ["p2","p6","p4","p1"].map(textPost).join(SEP),
+      feed: trending("pop-trend","bentley") + SEP + adPost("pop-fv","levis","Quality never goes out of style. Tap through three looks.","fv") + SEP + ["p2","p6","p4","p1"].map(textPost).join(SEP),
       rail: RECENT + POPCOMM + RFOOT
     };
   },
@@ -814,12 +837,13 @@ window.addEventListener("hashchange", render);
 /* ================= leaving-Reddit sheet ================= */
 function openSheet(brand, url){
   const b=BRANDS[brand]; let safe=b.variants[0].url;
-  try{ const u=new URL(url); if(u.protocol==="https:" && b.hosts.some(h=>u.hostname===h||u.hostname.endsWith("."+h))) safe=u.href; }catch(_){}
+  try{ const u=new URL(url); if(u.protocol==="https:" && (!b.hosts || b.hosts.some(h=>u.hostname===h||u.hostname.endsWith("."+h)))) safe=u.href; }catch(_){}
+  const host=(()=>{try{return new URL(safe).hostname.replace(/^www\./,"")}catch(_){return b.domain}})();
   const av=document.getElementById("sheet-av"); av.className=`bav ${brand}`; av.innerHTML=b.av;
-  document.getElementById("sheet-h").textContent=`Continue to ${b.domain}`;
+  document.getElementById("sheet-h").textContent=`Continue to ${host}`;
   document.getElementById("sheet-sub").textContent=`Ad · ${b.handle}`;
   document.getElementById("sheet-url").textContent=safe;
-  const go=document.getElementById("sheet-go"); go.href=safe; go.textContent=`Open ${b.domain}`;
+  const go=document.getElementById("sheet-go"); go.href=safe; go.textContent=`Open ${host}`;
   document.getElementById("scrim").classList.add("on");
 }
 function closeSheet(){ document.getElementById("scrim").classList.remove("on"); }
@@ -827,10 +851,10 @@ function closeSheet(){ document.getElementById("scrim").classList.remove("on"); 
 /* ================= demo guide ================= */
 const GUIDE = [
   ["Takeovers and premium", [
-    ["Reddit Takeover: first in-feed post","24-hour, one brand. First ad on Home and Popular.","#/","tk-feed","Live"],
+    ["Reddit Takeover: first in-feed post","Bentley. 24-hour, one brand. First ad on Home and Popular.","#/","tk-feed","Live"],
     ["Takeover top banner","Above the fold in the right rail.","#/","tk-top","Live",1],
     ["Takeover sticky banner","Stays in view as the rail scrolls.","#/","tk-sticky","Live",1],
-    ["Trending Takeover tile","Promoted tile in Trending today on Popular and Search.","#/popular","trend","Live"],
+    ["Takeover trending tile","Bentley's promoted tile in Trending today on Popular and Search.","#/popular","trend","Live"],
     ["First View","Guaranteed first ad impression on Home and Popular.","#/popular","fv","Live"],
     ["Category Takeover","First post in a category's communities, plus banners.","#/r/capsulewardrobe","cat","Live"]]],
   ["In-feed", [
