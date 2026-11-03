@@ -515,6 +515,7 @@ function observeFlicks(){
   }, { rootMargin:"900px 0px 900px 0px" });
   document.querySelectorAll(".flick[data-slot]").forEach(h=>io.observe(h));
   requestAnimationFrame(mountVisible);
+  setTimeout(mountVisible, 60);
 }
 function mountVisible(){
   document.querySelectorAll(".flick[data-slot]").forEach(h=>{
@@ -523,6 +524,7 @@ function mountVisible(){
   });
 }
 let mvT; addEventListener("scroll", ()=>{ clearTimeout(mvT); mvT=setTimeout(mountVisible,120); }, {passive:true});
+setInterval(mountVisible, 1500);
 function mount(host){
   const id=host.dataset.slot, s=SLOTS[id]; if(!s || s.mounted) return;
   s.mounted=true; s.ready=false; s.error=false;
