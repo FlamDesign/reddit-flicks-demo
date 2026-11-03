@@ -254,24 +254,19 @@ svg{display:block}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:80;background:#f2f4f5;color:#0e1113;font-weight:600;font-size:13px;padding:10px 16px;border-radius:999px;transition:all .25s;pointer-events:none;max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:translateX(-50%)}
 
-/* demo guide (Flam overlay, not Reddit UI) */
-.gpill{position:fixed;right:20px;bottom:20px;z-index:55;display:flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 14px;border-radius:999px;background:#fff;color:#0e1113;font-weight:700;box-shadow:0 8px 30px rgba(0,0,0,.45)}
-.gpill i{font-style:normal;background:#0e1113;color:#fff;border-radius:999px;font-size:12px;padding:2px 8px}
-.gpanel{position:fixed;right:20px;bottom:74px;z-index:56;width:360px;max-height:min(72vh,640px);overflow-y:auto;background:#fff;color:#14181b;border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.55);padding:14px 10px 10px;display:none}
+/* demo guide: compact, in Reddit's dark style */
+.gpill{position:fixed;right:20px;bottom:20px;z-index:55;display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:999px;background:#1a1d1f;color:var(--t1);font-weight:600;font-size:13px;box-shadow:0 0 0 1px var(--line),0 8px 24px rgba(0,0,0,.5)}
+.gpill:hover{background:#22272a}
+.gpill i{font-style:normal;background:var(--orange);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
+.gscrim{position:fixed;inset:0;z-index:55;display:none}
+.gscrim.on{display:block}
+.gpanel{position:fixed;right:20px;bottom:70px;z-index:56;width:280px;max-height:min(60vh,520px);overflow-y:auto;background:#1a1d1f;color:var(--t1);border-radius:16px;box-shadow:0 0 0 1px var(--line),0 16px 40px rgba(0,0,0,.55);padding:6px 6px 8px;display:none;scrollbar-width:thin}
 .gpanel.on{display:block}
-.gpanel .gh{display:flex;justify-content:space-between;align-items:center;padding:0 8px 6px}
-.gpanel .gh b{font-size:15px}
-.gpanel .gh button{width:30px;height:30px;border-radius:50%;color:#555}
-.gpanel .gh button:hover{background:#eee}
-.gpanel h6{margin:10px 8px 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6b7680}
-.gitem{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;padding:8px;border-radius:10px;color:#14181b}
-.gitem:hover{background:#f0f2f4}
-.gitem .n{width:22px;height:22px;border-radius:50%;background:#14181b;color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;flex:none;margin-top:1px}
-.gitem b{display:block;font-size:13px}
-.gitem small{display:block;font-size:12px;color:#5d6870;line-height:1.35}
-.gitem .st{display:inline-block;margin-left:6px;font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px;background:#e7f6ec;color:#16723a;vertical-align:1px}
-.gitem .st.t{background:#fff3db;color:#8a5a00}
-.gnote{font-size:11px;color:#6b7680;padding:8px 8px 2px;line-height:1.45}
+.gpanel .grab{display:none}
+.gpanel h6{margin:10px 10px 4px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+.gitem{display:flex;gap:10px;align-items:center;width:100%;text-align:left;height:36px;padding:0 10px;border-radius:8px;font-size:13px;color:var(--t1)}
+.gitem:hover{background:#2a3236}
+.gitem .n{width:20px;flex:none;color:var(--t3);font-size:12px;font-variant-numeric:tabular-nums}
 .pulse{animation:pulse 2.2s ease-out 1}
 @keyframes pulse{0%{box-shadow:0 0 0 0 #ffd23f}15%{box-shadow:0 0 0 4px #ffd23f}100%{box-shadow:0 0 0 4px transparent}}
 
@@ -325,8 +320,11 @@ svg{display:block}
   .scrim{align-items:flex-end;padding:0}
   .sheet{max-width:none;border-radius:20px 20px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom));border-left:0;border-right:0;border-bottom:0}
   .sheet .grab{display:block}
-  .gpill{right:12px;bottom:calc(68px + env(safe-area-inset-bottom));height:40px}
-  .gpanel{left:0;right:0;bottom:0;width:auto;max-height:78vh;border-radius:20px 20px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+  .gpill{right:12px;bottom:calc(68px + env(safe-area-inset-bottom));height:36px;padding:0 12px}
+  .gscrim.on{background:rgba(0,0,0,.5)}
+  .gpanel{left:0;right:0;bottom:0;width:auto;max-height:50vh;border-radius:16px 16px 0 0;padding:8px 8px calc(10px + env(safe-area-inset-bottom))}
+  .gpanel .grab{display:block;width:36px;height:4px;border-radius:2px;background:#3d474d;margin:2px auto 4px}
+  .gitem{height:40px;font-size:14px}
   .toast{bottom:calc(76px + env(safe-area-inset-bottom))}
 }
 </style>
@@ -394,6 +392,7 @@ svg{display:block}
 </nav>
 
 <button class="gpill" id="gpill" onclick="toggleGuide()" aria-expanded="false">Ad formats <i id="gcount"></i></button>
+<div class="gscrim" id="gscrim" onclick="toggleGuide(false)"></div>
 <div class="gpanel" id="gpanel" role="dialog" aria-label="Ad formats in this demo"></div>
 
 <div class="scrim" id="scrim" onclick="if(event.target===this)closeSheet()">
@@ -850,41 +849,42 @@ function closeSheet(){ document.getElementById("scrim").classList.remove("on"); 
 
 /* ================= demo guide ================= */
 const GUIDE = [
-  ["Takeovers and premium", [
-    ["Reddit Takeover: first in-feed post","Bentley. 24-hour, one brand. First ad on Home and Popular.","#/","tk-feed","Live"],
-    ["Takeover top banner","Above the fold in the right rail.","#/","tk-top","Live",1],
-    ["Takeover sticky banner","Stays in view as the rail scrolls.","#/","tk-sticky","Live",1],
-    ["Takeover trending tile","Bentley's promoted tile in Trending today on Popular and Search.","#/popular","trend","Live"],
-    ["First View","Guaranteed first ad impression on Home and Popular.","#/popular","fv","Live"],
-    ["Category Takeover","First post in a category's communities, plus banners.","#/r/capsulewardrobe","cat","Live"]]],
+  ["Takeovers", [
+    ["Reddit Takeover","#/","tk-feed"],
+    ["Takeover top banner","#/","tk-top",1],
+    ["Takeover sticky banner","#/","tk-sticky",1],
+    ["Takeover trending tile","#/popular","trend"],
+    ["First View","#/popular","fv"],
+    ["Category Takeover","#/r/capsulewardrobe","cat"]]],
   ["In-feed", [
-    ["Free-form ad","Long post mixing text and media, Flick inline.","#/","ff","Live"],
-    ["Carousel ad","2 to 6 cards. Flick as the lead card.","#/","car","Live"],
-    ["Product ad","Single product from the catalog (Dynamic Product Ads).","#/","prod","Live"],
-    ["Collection ad","Hero plus product tiles. Tiles follow the color tapped.","#/","col","Since Mar 2026"],
-    ["AMA ad","Promotes a brand AMA with reminders.","#/","ama","Live"],
-    ["Reminder ad","Remind Me button on an image or video ad.","#/","rem","Since Apr 2026"]]],
+    ["Free-form ad","#/","ff"],
+    ["Carousel ad","#/","car"],
+    ["Product ad","#/","prod"],
+    ["Collection ad","#/","col"],
+    ["AMA ad","#/","ama"],
+    ["Reminder ad","#/","rem"]]],
   ["Conversation and search", [
-    ["Conversation ad","Between the post and the comments.","#/post/p1","conv","Live"],
-    ["Shopping listing ad","Several brands in one unit, inside a thread comparing options.","#/post/p1","list","Alpha"],
-    ["Search shopping carousel","Products at the bottom of search results.","#/search?q=denim%20overshirt","srch","Test"]]]
+    ["Conversation ad","#/post/p1","conv"],
+    ["Shopping listing ad","#/post/p1","list"],
+    ["Search shopping ad","#/search?q=denim%20overshirt","srch"]]]
 ];
 function buildGuide(){
-  let n=0;
-  const html=GUIDE.map(([sec,items])=>`<h6>${sec}</h6>`+items.map(([t,s,route,anchor,st,desk])=>{n++;
-    const cls = /Alpha|Test/.test(st) ? "st t" : "st";
-    return `<button class="gitem" onclick="go('${route}','${anchor}',${desk?1:0})"><span class="n">${n}</span><span><b>${t}<span class="${cls}">${st}</span></b><small>${s}${desk?" Desktop only.":""}</small></span></button>`;}).join("")).join("");
-  document.getElementById("gpanel").innerHTML=`<div class="gh"><b>Every Reddit ad format, as a Flick</b><button aria-label="Close" onclick="toggleGuide(false)">✕</button></div>${html}
-    <div class="gnote">Interactive Ads (alpha, built on Reddit's Developer Platform) are the format a Flick maps to directly. Not shown: lead gen and app install ads.</div>`;
+  const wide = innerWidth>=1200; let n=0;
+  const html=GUIDE.map(([sec,items])=>{
+    const rows=items.filter(it=>wide||!it[3]).map(([t,route,anchor])=>{n++;
+      return `<button class="gitem" onclick="go('${route}','${anchor}')"><span class="n">${n}</span>${t}</button>`;}).join("");
+    return `<h6>${sec}</h6>${rows}`;}).join("");
+  document.getElementById("gpanel").innerHTML=`<div class="grab"></div>${html}`;
   document.getElementById("gcount").textContent=n;
 }
 function toggleGuide(force){
   const p=document.getElementById("gpanel"); const on = force===undefined ? !p.classList.contains("on") : force;
-  p.classList.toggle("on", on); document.getElementById("gpill").setAttribute("aria-expanded", on);
+  if(on) buildGuide();
+  p.classList.toggle("on", on); document.getElementById("gscrim").classList.toggle("on", on);
+  document.getElementById("gpill").setAttribute("aria-expanded", on);
 }
-function go(route, anchor, desktopOnly){
-  if(desktopOnly && innerWidth<1200){ toast("This slot sits in the desktop right rail. Widen the window to see it."); }
-  if(innerWidth<768) toggleGuide(false);
+function go(route, anchor){
+  toggleGuide(false);
   const want=route, have=location.hash||"#/";
   if(have===want || (want==="#/" && have==="#")) scrollToAnchor(anchor);
   else { pendingAnchor=anchor; location.hash=want; }
@@ -899,6 +899,7 @@ function scrollToAnchor(a){
 
 document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeSheet(); toggleGuide(false); document.body.classList.remove("drawer"); } });
 matchMedia("(min-width:960px)").addEventListener("change", e=>{ if(e.matches) document.body.classList.remove("drawer"); });
+matchMedia("(min-width:1200px)").addEventListener("change", ()=>buildGuide());
 buildGuide();
 render();
 </script>
