@@ -470,7 +470,7 @@ window.addEventListener("error",function(e){var s=e.target;if(s&&s.tagName==="SC
   return `<!doctype html>
 <meta charset=utf-8>
 <meta name=ad.orientation content=portrait,landscape>
-<style>html,body{margin:0;height:100%;background:${bg};overflow:hidden}</style>
+<style>html,body{margin:0;height:100%;background:${bg};overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}</style>
 <script>${bridge}<\/script>
 <script>var ExitApi=window.ExitApi||{exit:function(){}},clickTag="\${CLICK_URL_UNESC}";<\/script>
 ${cfg}
@@ -507,24 +507,37 @@ function syncVariant(id){
   document.querySelectorAll(`[data-vname="${id}"]`).forEach(el=>el.textContent = variantOf(id).n);
 }
 
-let io = null;
-function observeFlicks(){
-  if(io) io.disconnect();
-  io = new IntersectionObserver(entries=>{
-    entries.forEach(en=>{ const host=en.target; en.isIntersecting ? mount(host) : unmount(host); });
-  }, { rootMargin:"900px 0px 900px 0px" });
-  document.querySelectorAll(".flick[data-slot]").forEach(h=>io.observe(h));
-  requestAnimationFrame(mountVisible);
-  setTimeout(mountVisible, 60);
+/* Load only the Flicks a viewer can actually see. Phones can run only a few
+   video players at once; past that, players stall and stop responding to taps. */
+const IS_TOUCH = matchMedia("(pointer:coarse)").matches;
+const small = () => IS_TOUCH || innerWidth < 768;
+const budget = () => small() ? 3 : 8;
+const margin = () => small() ? 120 : 500;
+function visibleArea(el, m){
+  const r=el.getBoundingClientRect(); if(!r.width || !r.height) return 0;
+  let L=r.left, T=r.top, R=r.right, B=r.bottom;
+  for(let p=el.parentElement; p && p!==document.body; p=p.parentElement){
+    const cs=getComputedStyle(p);
+    if(cs.display==="none") return 0;
+    if(cs.overflowX!=="visible"){ const pr=p.getBoundingClientRect(); L=Math.max(L,pr.left); R=Math.min(R,pr.right); }
+    if(cs.overflowY!=="visible"){ const pr=p.getBoundingClientRect(); T=Math.max(T,pr.top); B=Math.min(B,pr.bottom); }
+  }
+  L=Math.max(L,-m); R=Math.min(R,innerWidth+m); T=Math.max(T,-m); B=Math.min(B,innerHeight+m);
+  return Math.max(0,R-L) * Math.max(0,B-T);
 }
-function mountVisible(){
-  document.querySelectorAll(".flick[data-slot]").forEach(h=>{
-    const r=h.getBoundingClientRect();
-    if(r.width && r.bottom > -900 && r.top < innerHeight+900 && r.right > -900 && r.left < innerWidth+900) mount(h);
-  });
+function manage(){
+  const m=margin(), n=budget();
+  const hosts=[...document.querySelectorAll(".flick[data-slot]")].map(h=>({h, a:visibleArea(h,m)}));
+  const keep=new Set(hosts.filter(x=>x.a>0).sort((x,y)=>y.a-x.a).slice(0,n).map(x=>x.h));
+  hosts.forEach(({h})=>{ if(!keep.has(h)) unmount(h); });
+  keep.forEach(mount);
 }
-let mvT; addEventListener("scroll", ()=>{ clearTimeout(mvT); mvT=setTimeout(mountVisible,120); }, {passive:true});
-setInterval(mountVisible, 1500);
+const mountVisible = manage;
+function observeFlicks(){ setTimeout(manage, 50); }
+let mvT; const queue=()=>{ clearTimeout(mvT); mvT=setTimeout(manage,120); };
+addEventListener("scroll", queue, {passive:true, capture:true});
+addEventListener("resize", queue);
+setInterval(manage, 800);
 function mount(host){
   const id=host.dataset.slot, s=SLOTS[id]; if(!s || s.mounted) return;
   s.mounted=true; s.ready=false; s.error=false;
