@@ -203,10 +203,10 @@ svg{display:block}
 .bpanel .cta{background:#fff;color:#002f6c;box-shadow:none;align-self:flex-start;height:36px}
 .b250{height:250px;background:#002f6c;display:flex;align-items:center;justify-content:space-between}
 .b250 .flick{width:250px;height:250px}
-.b250 .side{width:50px;height:250px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 0}
+.b250 .side{width:50px;height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .b250 .side .bav{width:30px;height:30px;font-size:8px;border:1px solid #ffffff55}
 .b250 .side button{writing-mode:vertical-rl;transform:rotate(180deg);color:#fff;font-weight:700;font-size:12px;letter-spacing:.08em}
-.stick{position:sticky;top:calc(var(--hdr) + 16px)}
+.stick{position:sticky;top:var(--hdr);z-index:5;background:var(--bg);padding:16px 0 12px;margin:0 -8px;box-shadow:0 -1px 0 var(--bg)}
 
 /* post page */
 .back{width:32px;height:32px;border-radius:50%;background:var(--pill);display:grid;place-items:center;flex:none}
@@ -514,7 +514,15 @@ function observeFlicks(){
     entries.forEach(en=>{ const host=en.target; en.isIntersecting ? mount(host) : unmount(host); });
   }, { rootMargin:"900px 0px 900px 0px" });
   document.querySelectorAll(".flick[data-slot]").forEach(h=>io.observe(h));
+  requestAnimationFrame(mountVisible);
 }
+function mountVisible(){
+  document.querySelectorAll(".flick[data-slot]").forEach(h=>{
+    const r=h.getBoundingClientRect();
+    if(r.width && r.bottom > -900 && r.top < innerHeight+900 && r.right > -900 && r.left < innerWidth+900) mount(h);
+  });
+}
+let mvT; addEventListener("scroll", ()=>{ clearTimeout(mvT); mvT=setTimeout(mountVisible,120); }, {passive:true});
 function mount(host){
   const id=host.dataset.slot, s=SLOTS[id]; if(!s || s.mounted) return;
   s.mounted=true; s.ready=false; s.error=false;
@@ -709,12 +717,12 @@ const BANNER_COPY = {
 function topBanner(id, anchor, brand="gap"){
   const b=BRANDS[brand], c=BANNER_COPY[brand];
   return `<div data-anchor="${anchor}"><div class="adlabel">Advertisement</div>
-    <div class="banner b600 bn-${brand}">${flick(id,brand)}<div class="bpanel">${bav(brand)}<h4>${c.h}</h4><p>${c.p}</p><button class="cta" onclick="shop('${id}')">${b.cta}</button></div></div></div>`;
+    <div class="banner b600 bn-${brand}">${flick(id,brand)}<div class="bpanel"><h4>${c.h}</h4><p>${c.p}</p><button class="cta" onclick="shop('${id}')">${b.cta}</button></div></div></div>`;
 }
 function stickyBanner(id, anchor, brand="gap"){
   const b=BRANDS[brand];
   return `<div class="stick" data-anchor="${anchor}"><div class="adlabel">Advertisement</div>
-    <div class="banner b250 bn-${brand}">${flick(id,brand)}<div class="side">${bav(brand)}<button onclick="shop('${id}')">${b.cta.toUpperCase()}</button></div></div></div>`;
+    <div class="banner b250 bn-${brand}">${flick(id,brand)}<div class="side"><button onclick="shop('${id}')">${b.cta.toUpperCase()}</button></div></div></div>`;
 }
 
 /* ================= organic content ================= */
