@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flicks on Reddit: Concept Demo</title>
+<style>
+:root{
+  --bg:#0e1113; --panel:#0e1113; --card-h:#181c1f; --line:#2a3236; --line-soft:#1f2629;
+  --pill:#2a3236; --pill-h:#333d42; --t1:#f2f4f5; --t2:#b7cad4; --t3:#8ba2ad;
+  --orange:#ff4500; --blue:#648efc; --down:#6a5cff; --join:#d7dadc;
+  --nav-w:272px; --rail-w:316px; --hdr:56px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--t1);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+a{color:inherit;text-decoration:none}
+svg{display:block}
+
+/* ---------- header ---------- */
+.hdr{position:sticky;top:0;z-index:30;height:var(--hdr);display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--line)}
+.burger{display:none;width:40px;height:40px;border-radius:50%;place-items:center}
+.burger:hover{background:var(--pill)}
+.logo{display:flex;align-items:center;gap:8px;flex:none}
+.logo .mark{width:32px;height:32px;border-radius:50%;background:var(--orange);display:grid;place-items:center}
+.logo .word{font-weight:800;font-size:24px;letter-spacing:-.5px}
+.search{flex:1;display:flex;justify-content:center;min-width:0}
+.search label{width:100%;max-width:560px;height:40px;border-radius:999px;background:#2a3236;display:flex;align-items:center;gap:10px;padding:0 14px;color:var(--t3)}
+.search label:hover{background:var(--pill-h)}
+.search .snoo{width:24px;height:24px;border-radius:50%;background:var(--orange);display:grid;place-items:center;flex:none}
+.search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--t1);font:inherit;text-align:center}
+.search input::placeholder{color:var(--t3)}
+.hact{display:flex;align-items:center;gap:4px;flex:none}
+.ib{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--t1)}
+.ib:hover{background:var(--pill)}
+.create{display:flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:999px;font-weight:600}
+.create:hover{background:var(--pill)}
+.avatar{width:34px;height:34px;border-radius:50%;background:#46d160;display:grid;place-items:center;margin-left:4px;position:relative}
+.avatar::after{content:"";position:absolute;right:0;bottom:0;width:9px;height:9px;border-radius:50%;background:#46d160;border:2px solid var(--bg)}
+.msearch{display:none}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:var(--nav-w) minmax(0,1fr);min-height:calc(100vh - var(--hdr))}
+.nav{position:sticky;top:var(--hdr);height:calc(100vh - var(--hdr));overflow-y:auto;border-right:1px solid var(--line);padding:12px 16px 24px;scrollbar-width:thin}
+.main{display:flex;justify-content:center;gap:24px;padding:8px 24px 40px}
+.feed{width:100%;max-width:756px;min-width:0}
+.rail{width:var(--rail-w);flex:none;padding-top:16px}
+
+/* ---------- left nav ---------- */
+.ni{display:flex;align-items:center;gap:14px;height:40px;padding:0 16px;border-radius:8px;color:var(--t2);font-size:14px}
+.ni:hover{background:var(--card-h)}
+.ni.on{background:#2a3236;color:var(--t1)}
+.ni svg{flex:none}
+.nsec{border-top:1px solid var(--line);margin-top:12px;padding-top:12px}
+.nsec h4{display:flex;justify-content:space-between;align-items:center;margin:0;height:40px;padding:0 16px;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--t3)}
+.game-hero{display:flex;gap:12px;align-items:center;margin:4px 0 8px;padding:12px;border-radius:12px;background:linear-gradient(135deg,#9df1f0,#7fe0e8);color:#0a1416}
+.game-hero .gi{width:36px;height:36px;border-radius:50%;background:#0f3d47;display:grid;place-items:center;flex:none}
+.game-hero b{display:block;font-size:15px}
+.game-hero small{display:block;font-size:12px;opacity:.75}
+.gico{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;flex:none;color:#111}
+.nfoot{margin:16px 16px 0;font-size:11px;color:var(--t3);line-height:1.5}
+
+/* ---------- posts ---------- */
+.post{position:relative;padding:8px 16px 10px;border-radius:16px;margin:4px 0}
+.post:hover{background:var(--card-h)}
+.sep{height:1px;background:var(--line);margin:0 16px}
+.meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t3);min-height:32px}
+.meta .sav{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;flex:none;overflow:hidden}
+.meta b{color:var(--t1);font-weight:600}
+.meta .dot{opacity:.7}
+.meta .grow{flex:1}
+.join{height:32px;padding:0 14px;border-radius:999px;background:var(--join);color:#0e1113;font-weight:600;font-size:13px}
+.join:hover{background:#fff}
+.join.on{background:transparent;color:var(--t1);box-shadow:inset 0 0 0 1px var(--t3)}
+.more{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--t1)}
+.more:hover{background:var(--pill)}
+.title{font-size:18px;line-height:24px;font-weight:600;margin:4px 0 8px;color:var(--t1);word-wrap:break-word}
+.body{color:var(--t2);font-size:14px;margin:-2px 0 10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.pillx{height:32px;display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:999px;background:var(--pill);font-size:12px;font-weight:600;color:var(--t1)}
+.pillx:hover{background:var(--pill-h)}
+.vote{padding:0;gap:0}
+.vote button{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--t1)}
+.vote button:hover{background:#3d474d}
+.vote .n{min-width:16px;text-align:center;padding:0 2px}
+.vote.up{background:var(--orange)}
+.vote.up button:hover{background:#d93a00}
+.vote.down{background:var(--down)}
+.vote.down button:hover{background:#5446e0}
+.imgmedia{border-radius:16px;overflow:hidden;border:1px solid var(--line-soft);aspect-ratio:16/10;max-height:520px;width:100%}
+
+/* ---------- the ad ---------- */
+.ad .meta .sav{background:#002f6c;color:#fff;font-family:Georgia,"Times New Roman",serif;font-size:8px;letter-spacing:.5px;border-radius:50%}
+.admedia{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#151a1c}
+.stage{position:relative;width:100%;aspect-ratio:1/1;max-height:560px;display:grid;place-items:center;
+  background:radial-gradient(120% 90% at 50% 40%,#e9e8e4 0%,#d9d8d3 55%,#c6c5c0 100%)}
+.flick{position:relative;height:100%;aspect-ratio:1/1;max-width:100%;overflow:hidden;background:#eef0f2}
+.flick iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.fstate{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;transition:opacity .4s;background:#eef0f2}
+.fstate.hide{opacity:0}
+.fstate.load::after{content:"";width:34px;height:34px;border-radius:50%;border:3px solid #c9cfd4;border-top-color:#002f6c;animation:spin .9s linear infinite}
+.fstate.err{background:#2b1414;color:#ffd9d4;pointer-events:auto;padding:24px;text-align:center;font-size:13px;line-height:1.5}
+.fstate.err b{display:block;font-size:15px;margin-bottom:6px;color:#fff}
+.fwarn{position:absolute;left:10px;bottom:10px;font-size:11px;background:#fff6db;color:#7a5600;border-radius:999px;padding:4px 10px;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.adbar{display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--line);background:#0e1113}
+.adbar .dom{flex:1;min-width:0;color:var(--t2);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adbar .dom:hover{text-decoration:underline}
+.cta{height:32px;padding:0 16px;border-radius:999px;font-weight:600;font-size:13px;box-shadow:inset 0 0 0 1px #6b7a82;flex:none}
+.cta:hover{background:var(--pill)}
+.hint{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t3);margin:8px 2px 0}
+.hint i{width:6px;height:6px;border-radius:50%;background:#46d160;display:inline-block;flex:none}
+
+/* ---------- right rail ---------- */
+.rcard{background:#04090a;border-radius:16px;padding:12px 0 8px;margin-bottom:16px;overflow:hidden}
+.rcard h3{display:flex;justify-content:space-between;align-items:center;margin:0;padding:4px 16px 8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+.rcard h3 button{text-transform:none;letter-spacing:0;color:var(--blue);font-size:14px;font-weight:500}
+.rp{display:block;padding:10px 16px;border-bottom:1px solid var(--line-soft)}
+.rp:last-child{border-bottom:0}
+.rp:hover{background:var(--card-h)}
+.rp .m{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t3);margin-bottom:4px}
+.rp .m span.sav{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;color:#111;flex:none}
+.rp b{display:block;font-size:14px;font-weight:600;color:var(--t2);line-height:1.35}
+.rp small{display:block;color:var(--t3);font-size:12px;margin-top:4px}
+.comm{display:flex;align-items:center;gap:10px;padding:8px 16px}
+.comm:hover{background:var(--card-h)}
+.comm .sav{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:#111;flex:none}
+.comm b{display:block;font-size:14px;font-weight:500}
+.comm small{display:block;color:var(--t3);font-size:12px}
+.rfoot{font-size:12px;color:var(--t3);padding:0 16px;line-height:1.6}
+
+/* ---------- sheet (leaving Reddit) ---------- */
+.scrim{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}
+.scrim.on{display:flex}
+.sheet{width:100%;max-width:420px;background:#181c1f;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:pop .18s ease-out}
+@keyframes pop{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+.sheet .row{display:flex;align-items:center;gap:12px}
+.sheet .gap{width:44px;height:44px;border-radius:10px;background:#002f6c;color:#fff;display:grid;place-items:center;font-family:Georgia,"Times New Roman",serif;font-size:13px;letter-spacing:1px;flex:none}
+.sheet h3{margin:0;font-size:17px}
+.sheet .url{margin:14px 0 6px;padding:10px 12px;border-radius:10px;background:#0e1113;color:var(--t2);font-size:12px;word-break:break-all;max-height:62px;overflow:hidden}
+.sheet p{margin:8px 0 16px;color:var(--t3);font-size:13px}
+.sheet .btns{display:flex;gap:10px}
+.sheet .btns button,.sheet .btns a{flex:1;height:44px;border-radius:999px;font-weight:600;display:grid;place-items:center}
+.sheet .go{background:#0a5ce6;color:#fff}
+.sheet .go:hover{background:#0b4fc4}
+.sheet .stay{background:var(--pill)}
+.sheet .stay:hover{background:var(--pill-h)}
+.sheet .grab{display:none;width:40px;height:4px;border-radius:2px;background:#3d474d;margin:-8px auto 14px}
+
+/* ---------- mobile chrome ---------- */
+.tabbar{display:none}
+.drawer-scrim{display:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:1199px){
+  .rail{display:none}
+}
+@media (max-width:959px){
+  .burger{display:grid}
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .nav{position:fixed;z-index:50;top:var(--hdr);left:0;bottom:0;height:auto;width:var(--nav-w);background:var(--bg);transform:translateX(-102%);transition:transform .22s ease}
+  body.drawer .nav{transform:none}
+  .drawer-scrim{position:fixed;inset:var(--hdr) 0 0 0;z-index:45;background:rgba(0,0,0,.55)}
+  body.drawer .drawer-scrim{display:block}
+  .main{padding:8px 16px 40px}
+}
+@media (max-width:767px){
+  :root{--hdr:52px}
+  .hdr{gap:4px;padding:0 6px 0 4px}
+  .logo .mark{width:30px;height:30px}
+  .logo .word{font-size:22px}
+  .search{display:none}
+  .msearch{display:grid;margin-left:auto}
+  .hide-m{display:none !important}
+  .main{padding:0 0 calc(64px + env(safe-area-inset-bottom))}
+  .post{border-radius:0;padding:10px 12px 8px;margin:0}
+  .post:hover{background:transparent}
+  .sep{margin:0;height:8px;background:#000}
+  .title{font-size:16px;line-height:21px}
+  .admedia{margin:0 -12px;border-radius:0;border-left:0;border-right:0}
+  .imgmedia{border-radius:12px}
+  .stage{max-height:none}
+  .meta{font-size:12px}
+  .tabbar{display:flex;position:fixed;z-index:40;left:0;right:0;bottom:0;height:calc(56px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--bg);border-top:1px solid var(--line)}
+  .tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--t3)}
+  .tabbar button.on{color:var(--t1)}
+  .scrim{align-items:flex-end;padding:0}
+  .sheet{max-width:none;border-radius:20px 20px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom));border-left:0;border-right:0;border-bottom:0}
+  .sheet .grab{display:block}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <button class="burger" aria-label="Open menu" onclick="document.body.classList.toggle('drawer')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+  <a class="logo" href="#" aria-label="Home">
+    <span class="mark"><svg width="20" height="20" viewBox="0 0 20 20"><ellipse cx="10" cy="12" rx="7" ry="5" fill="#fff"/><circle cx="7.4" cy="11.6" r="1.2" fill="#ff4500"/><circle cx="12.6" cy="11.6" r="1.2" fill="#ff4500"/><circle cx="14.6" cy="3.6" r="1.4" fill="#fff"/><path d="M10 7l1.2-4 3.2.6" stroke="#fff" stroke-width="1.1" fill="none"/></svg></span>
+    <span class="word">reddit</span>
+  </a>
+  <div class="search">
+    <label>
+      <span class="snoo"><svg width="14" height="14" viewBox="0 0 20 20"><ellipse cx="10" cy="12" rx="7" ry="5" fill="#fff"/></svg></span>
+      <input placeholder="Search Reddit" aria-label="Search Reddit">
+    </label>
+  </div>
+  <div class="hact">
+    <button class="ib msearch" aria-label="Search"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></button>
+    <button class="ib hide-m" aria-label="Advertise"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 15l2.2-6h.6L12 15M7.8 13h3.4M14 9h1.6a3 3 0 010 6H14z" stroke-linejoin="round"/></svg></button>
+    <button class="ib hide-m" aria-label="Chat"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 00-7.4 12.7L3.5 20.5l4.4-1.1A8.5 8.5 0 1012 3.5z"/><circle cx="8.5" cy="12" r=".6" fill="currentColor"/><circle cx="12" cy="12" r=".6" fill="currentColor"/><circle cx="15.5" cy="12" r=".6" fill="currentColor"/></svg></button>
+    <button class="create hide-m"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>Create</button>
+    <button class="ib hide-m" aria-label="Notifications"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 004 0"/></svg></button>
+    <span class="avatar" aria-label="Profile"><svg width="20" height="20" viewBox="0 0 20 20"><ellipse cx="10" cy="12" rx="6.4" ry="4.6" fill="#fff"/><circle cx="7.8" cy="11.6" r="1" fill="#46d160"/><circle cx="12.2" cy="11.6" r="1" fill="#46d160"/></svg></span>
+  </div>
+</header>
+
+<div class="drawer-scrim" onclick="document.body.classList.remove('drawer')"></div>
+
+<div class="shell">
+  <nav class="nav" aria-label="Main">
+    <a class="ni on" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2l8.5 7.3V20a1 1 0 01-1 1h-5v-6h-5v6h-5a1 1 0 01-1-1v-9.5z"/></svg>Home</a>
+    <a class="ni" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M9 15l6-6M10 9h5v5" stroke-linecap="round"/></svg>Popular</a>
+    <a class="ni" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="14" rx="2"/><path d="M7 9h4v4H7zM14 9h3M14 13h3M7 16h10"/></svg>News</a>
+    <a class="ni" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="16" r="3"/><circle cx="17" cy="16" r="3"/><circle cx="12" cy="7" r="3"/></svg>Explore</a>
+    <a class="ni" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>Start a community</a>
+
+    <div class="nsec">
+      <h4>Games on Reddit <span>⌃</span></h4>
+      <div class="game-hero"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="#9df1f0"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/></svg></span><span><b>Tower Stack</b><small>Build higher every day.</small><small>64K monthly players</small></span></div>
+      <a class="ni" href="#"><span class="gico" style="background:#ffd23f">✎</span>Daily Doodle</a>
+      <a class="ni" href="#"><span class="gico" style="background:#ffb4a2">?</span>Paw Puzzle</a>
+      <a class="ni" href="#"><span class="gico" style="background:#c9b6ff">W</span>Word Ladder</a>
+      <a class="ni" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="11" rx="5"/><path d="M8 10.5v4M6 12.5h4M15.5 11.5h.01M17.5 13.5h.01" stroke-linecap="round"/></svg>Discover more</a>
+    </div>
+    <div class="nsec">
+      <h4>Custom feeds <span>⌃</span></h4>
+      <a class="ni" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>Create custom feed</a>
+    </div>
+    <div class="nsec">
+      <h4>Communities <span>⌃</span></h4>
+      <a class="ni" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>Manage communities</a>
+    </div>
+    <div class="nsec">
+      <h4>Resources <span>⌃</span></h4>
+      <a class="ni" href="#"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01" stroke-linecap="round"/></svg>About</a>
+    </div>
+    <div class="nfoot">Concept prototype by Flam showing how a Flick could run as a native in-feed ad. Not affiliated with or endorsed by Reddit or Gap.</div>
+  </nav>
+
+  <div class="main">
+    <main class="feed" id="feed" aria-label="Home feed"></main>
+    <aside class="rail">
+      <div class="rcard">
+        <h3>Recent posts <button>Clear</button></h3>
+        <a class="rp" href="#"><div class="m"><span class="sav" style="background:#7ad3ff">c</span>r/capsulewardrobe · 4h ago</div><b>Ten pieces for fall: my list after two years of trying</b><small>812 upvotes · 164 comments</small></a>
+        <a class="rp" href="#"><div class="m"><span class="sav" style="background:#ffb86b">d</span>r/denim · 1d ago</div><b>How do you keep a chambray shirt from fading so fast?</b><small>96 upvotes · 41 comments</small></a>
+        <a class="rp" href="#"><div class="m"><span class="sav" style="background:#b5f28c">h</span>r/homecooking · 2d ago</div><b>Sheet pan dinners that actually crisp up</b><small>2.3K upvotes · 388 comments</small></a>
+      </div>
+      <div class="rcard">
+        <h3>Popular communities</h3>
+        <a class="comm" href="#"><span class="sav" style="background:#7ad3ff">c</span><span><b>r/capsulewardrobe</b><small>412K members</small></span></a>
+        <a class="comm" href="#"><span class="sav" style="background:#ffb86b">d</span><span><b>r/denim</b><small>188K members</small></span></a>
+        <a class="comm" href="#"><span class="sav" style="background:#ffd23f">t</span><span><b>r/thriftstorehauls</b><small>3.1M members</small></span></a>
+        <a class="comm" href="#"><span class="sav" style="background:#c9b6ff">p</span><span><b>r/photography</b><small>5.4M members</small></span></a>
+      </div>
+      <div class="rfoot">Concept prototype by Flam. Not affiliated with or endorsed by Reddit or Gap.</div>
+    </aside>
+  </div>
+</div>
+
+<nav class="tabbar" aria-label="Tabs">
+  <button class="on"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.2l8.5 7.3V20a1 1 0 01-1 1h-5v-6h-5v6h-5a1 1 0 01-1-1v-9.5z"/></svg>Home</button>
+  <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="16" r="3"/><circle cx="17" cy="16" r="3"/><circle cx="12" cy="7" r="3"/></svg>Communities</button>
+  <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Create</button>
+  <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5a8.5 8.5 0 00-7.4 12.7L3.5 20.5l4.4-1.1A8.5 8.5 0 1012 3.5z"/></svg>Chat</button>
+  <button><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 004 0"/></svg>Inbox</button>
+</nav>
+
+<div class="scrim" id="scrim" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-h">
+    <div class="grab"></div>
+    <div class="row"><span class="gap">GAP</span><div><h3 id="sheet-h">Continue to gap.com</h3><div style="color:var(--t3);font-size:12px">Ad · u/Gap</div></div></div>
+    <div class="url" id="sheet-url"></div>
+    <p id="sheet-note">You're leaving Reddit to visit the advertiser's site.</p>
+    <div class="btns"><button class="stay" onclick="closeSheet()">Stay on Reddit</button><a class="go" id="sheet-go" target="_blank" rel="noopener" onclick="setTimeout(closeSheet,150)">Open gap.com</a></div>
+  </div>
+</div>
+
+<script>
+/* ---------------- Gap Flick tag (as supplied) ---------------- */
+const GAP_SRC = "https://native-ads-dev.appless.workers.dev/mti1bs/ad.js";
+const GAP_URL = "https://www.gap.com/browse/product.do?pid=901884002&vid=REGULAR&searchText=denim%20shirt#pdp-page-content";
+
+function tagDoc(slotId, src){
+  // Bridge runs before the tag: routes the creative's CTA and render status to this page,
+  // so the CTA lands in Reddit's own "leaving Reddit" sheet instead of a blocked popup.
+  const bridge = `(function(){var S=${JSON.stringify(slotId)};function t(m){m.flam=1;m.slot=S;try{parent.postMessage(m,"*")}catch(e){}}
+window.__vxOpen=function(u){t({type:"cta",url:u||""});return true};
+window.ExitApi={exit:function(n,u){t({type:"cta",url:u||""})}};
+document.addEventListener("click",function(e){var a=e.target&&e.target.closest&&e.target.closest("a[target=_blank]");if(a){e.preventDefault();t({type:"cta",url:a.href})}},true);
+function hook(v){if(v.__flam)return;v.__flam=1;
+v.addEventListener("vertex-ready",function(){t({type:"ready"})});
+v.addEventListener("vertex-error",function(e){var d=e.detail||{};t({type:"error",msg:(d.message||d.code||"render error")+""})});
+v.addEventListener("vertex-cta",function(e){var d=e.detail||{};t({type:"cta",url:d.url||""})});
+v.addEventListener("vertex-diff-change",function(){t({type:"switch"})});}
+new MutationObserver(function(){var v=document.querySelector("vertex-player");if(v)hook(v)}).observe(document.documentElement,{childList:true,subtree:true});
+window.addEventListener("error",function(e){var s=e.target;if(s&&s.tagName==="SCRIPT")t({type:"error",msg:"Could not load "+s.src})},true);})();`;
+  return `<!doctype html>
+<meta charset=utf-8>
+<meta name=ad.orientation content=portrait,landscape>
+<style>html,body{margin:0;height:100%;background:#eef0f2;overflow:hidden}</style>
+<script>${bridge}<\/script>
+<script>var ExitApi=window.ExitApi||{exit:function(){}},clickTag="\${CLICK_URL_UNESC}";<\/script>
+<script>window.AD_CONFIG=window.AD_CONFIG||{};window.AD_CONFIG.dsp="dv360_studio";window.AD_CONFIG.publisherInfo={"publisher_id":"\${PUBLISHER_ID}","adsxt_publisher_id":"\${ADSXT_PUBLISHER_ID}","universal_site_id":"\${UNIVERSAL_SITE_ID}","source_url":"\${SOURCE_URL}","source_url_enc":"\${SOURCE_URL_ENC}","adsxt_ad_system_domain":"\${ADSXT_AD_SYSTEM_DOMAIN}"};window.AD_CONFIG.clickTracker={"mode":"exit","template":""};<\/script>
+<script src=${src}><\/script>`;
+}
+
+/* ---------------- icons ---------------- */
+const I = {
+  up:`<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M10 2.8L3 10.4h4.2v6.8h5.6v-6.8H17z"/></svg>`,
+  down:`<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M10 17.2l7-7.6h-4.2V2.8H7.2v6.8H3z"/></svg>`,
+  com:`<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M10 2.8a7.2 7.2 0 00-6.3 10.7L2.8 17.2l3.8-.9A7.2 7.2 0 1010 2.8z"/></svg>`,
+  share:`<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M11.5 4.5L17 10l-5.5 5.5V12.6c-4.2 0-6.6 1.2-8.5 4.4.6-4.7 3-8.1 8.5-8.6z"/></svg>`,
+  dots:`<svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="16" cy="10" r="1.6"/></svg>`
+};
+const fmt = n => n>=1000 ? (n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,"")+"K" : String(n);
+
+function actions(id, votes, comments){
+  return `<div class="acts">
+    <div class="pillx vote" data-vote="${id}" data-base="${votes}" data-state="0">
+      <button aria-label="Upvote" onclick="vote('${id}',1)">${I.up}</button><span class="n">${fmt(votes)}</span>
+      <button aria-label="Downvote" onclick="vote('${id}',-1)">${I.down}</button>
+    </div>
+    <button class="pillx">${I.com}<span>${fmt(comments)}</span></button>
+    <button class="pillx">${I.share}<span>Share</span></button>
+  </div>`;
+}
+function vote(id, dir){
+  const el = document.querySelector(`[data-vote="${id}"]`);
+  const cur = +el.dataset.state, next = cur===dir ? 0 : dir;
+  el.dataset.state = next;
+  el.classList.toggle("up", next===1); el.classList.toggle("down", next===-1);
+  el.querySelector(".n").textContent = fmt(+el.dataset.base + next);
+}
+function join(btn){ btn.classList.toggle("on"); btn.textContent = btn.classList.contains("on") ? "Joined" : "Join"; }
+
+/* ---------------- feed ---------------- */
+function adPost(){
+  return `<article class="post ad" aria-label="Advertisement">
+    <div class="meta">
+      <span class="sav">GAP</span><b>u/Gap</b><span class="dot">·</span><span>Ad</span><span class="grow"></span>
+      <button class="more" aria-label="More options">${I.dots}</button>
+    </div>
+    <a class="title" href="#" onclick="openSheet(GAP_URL);return false">One denim shirt, styled your way. Tap a color to switch the look.</a>
+    <div class="admedia">
+      <div class="stage"><div class="flick" data-slot="gap-feed"><div class="fstate load"></div></div></div>
+      <div class="adbar">
+        <a class="dom" href="#" onclick="openSheet(GAP_URL);return false">gap.com</a>
+        <button class="cta" onclick="openSheet(GAP_URL)">Shop Now</button>
+      </div>
+    </div>
+    ${actions("ad",42,6)}
+  </article>`;
+}
+function textPost(o){
+  return `<article class="post">
+    <div class="meta">
+      <span class="sav" style="background:${o.c};color:#111">${o.sub[0]}</span><b>r/${o.sub}</b><span class="dot">·</span><span>${o.age}</span><span class="grow"></span>
+      <button class="join" onclick="join(this)">Join</button><button class="more" aria-label="More options">${I.dots}</button>
+    </div>
+    <a class="title" href="#">${o.t}</a>
+    ${o.b?`<div class="body">${o.b}</div>`:""}
+    ${o.img?`<div class="imgmedia" style="background:${o.img}"></div>`:""}
+    ${actions(o.id,o.v,o.cm)}
+  </article>`;
+}
+const POSTS = [
+  {id:"p1",sub:"capsulewardrobe",c:"#7ad3ff",age:"3 hr. ago",t:"What's your go-to overshirt for fall layering?",b:"Trying to keep my wardrobe under 30 pieces. I want one shirt that works open over a tee in October and buttoned under a coat in December. Chambray, flannel, something else?",v:1240,cm:318},
+  {id:"p2",sub:"photography",c:"#c9b6ff",age:"6 hr. ago",t:"Golden hour on the coast last night, no edits beyond a slight crop",img:"linear-gradient(180deg,#f7b267 0%,#f4845f 38%,#7a4e7e 62%,#26355d 100%)",v:8730,cm:204},
+  {id:"p3",sub:"denim",c:"#ffb86b",age:"9 hr. ago",t:"PSA: wash your denim shirts inside out on cold. Six months in and the color is holding.",b:"Also hang dry. The difference vs my old one that went through the dryer every week is wild.",v:612,cm:97},
+  {id:"p4",sub:"homecooking",c:"#b5f28c",age:"1 day ago",t:"Weeknight sheet pan gnocchi with tomatoes and feta. 25 minutes start to finish.",img:"linear-gradient(135deg,#e85d3f 0%,#f4a259 35%,#f6e7c1 60%,#8cb369 100%)",v:3410,cm:156}
+];
+function render(){
+  const parts = [adPost(), ...POSTS.map(textPost)];
+  document.getElementById("feed").innerHTML = parts.join(`<div class="sep"></div>`) +
+    `<div class="nfoot" style="text-align:center;margin:28px 16px">Concept prototype by Flam showing how a Flick could run as a native in-feed ad. Not affiliated with or endorsed by Reddit or Gap.</div>`;
+  mountFlicks();
+}
+
+/* ---------------- Flick mounting and bridge ---------------- */
+const SLOTS = { "gap-feed": { src: GAP_SRC, ready:false, error:false, lastCta:0, timer:null } };
+function mountFlicks(){
+  document.querySelectorAll(".flick[data-slot]").forEach(host=>{
+    if(host.querySelector("iframe")) return;
+    const id = host.dataset.slot, s = SLOTS[id];
+    const f = document.createElement("iframe");
+    f.title = "Gap Flick: interactive ad"; f.setAttribute("allow","autoplay; fullscreen"); f.setAttribute("scrolling","no");
+    f.srcdoc = tagDoc(id, s.src);
+    host.prepend(f);
+    // No ready signal after 9s: lift the loader so a playing Flick is never hidden, and flag it.
+    s.timer = setTimeout(()=>{
+      if(s.ready||s.error) return;
+      host.querySelector(".fstate")?.classList.add("hide");
+      if(!host.querySelector(".fwarn")) host.insertAdjacentHTML("beforeend",`<span class="fwarn">No ready signal from Flick yet</span>`);
+      console.warn("[flicks] no vertex-ready from", id, s.src);
+    }, 9000);
+  });
+}
+window.addEventListener("message", e=>{
+  const m = e.data; if(!m || m.flam!==1) return;
+  const s = SLOTS[m.slot]; if(!s) return;
+  const host = document.querySelector(`.flick[data-slot="${m.slot}"]`);
+  if(!host || e.source !== host.querySelector("iframe")?.contentWindow) return;
+  if(m.type==="ready"){
+    s.ready = true; clearTimeout(s.timer);
+    host.querySelector(".fstate")?.classList.add("hide"); host.querySelector(".fwarn")?.remove();
+  } else if(m.type==="error"){
+    s.error = true; clearTimeout(s.timer); console.error("[flicks] render error", m.slot, m.msg);
+    const st = host.querySelector(".fstate"); st.className = "fstate err";
+    st.innerHTML = `<div><b>Flick failed to load</b>${String(m.msg).replace(/</g,"&lt;")}<br><br>If this file is open inside a preview window, open it directly in Chrome. Previews block ad scripts.</div>`;
+  } else if(m.type==="cta"){
+    // The creative fires its CTA up to three ways (exit, link, event); act once.
+    const now = Date.now(); if(now - s.lastCta < 900) return; s.lastCta = now;
+    openSheet(m.url || GAP_URL);
+  }
+});
+
+/* ---------------- leaving-Reddit sheet ---------------- */
+function openSheet(url){
+  let safe = GAP_URL;
+  try { const u = new URL(url); if(u.protocol==="https:" && /(^|\.)gap\.com$/.test(u.hostname)) safe = u.href; } catch(_){}
+  document.getElementById("sheet-url").textContent = safe;
+  document.getElementById("sheet-go").href = safe;
+  document.getElementById("scrim").classList.add("on");
+}
+function closeSheet(){ document.getElementById("scrim").classList.remove("on"); }
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeSheet(); document.body.classList.remove("drawer"); } });
+matchMedia("(min-width:960px)").addEventListener("change", e=>{ if(e.matches) document.body.classList.remove("drawer"); });
+
+render();
+</script>
+</body>
+</html>
